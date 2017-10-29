@@ -49,6 +49,8 @@ public class DbHelper {
   }
 
   public int getMaxTripId() {
+    List<Integer> tripIds = getAllTripIds();
+    if (tripIds.isEmpty()) return 1;
     return Collections.max(getAllTripIds());
   }
 

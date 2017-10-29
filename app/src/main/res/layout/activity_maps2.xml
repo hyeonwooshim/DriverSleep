@@ -1,0 +1,44 @@
+<RelativeLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:id="@+id/topLayout"
+  android:orientation="vertical"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:keepScreenOn="true">
+
+  <include layout="@layout/toolbar"
+    android:id="@+id/toolbar_layout"/>
+
+  <fragment
+    android:id="@+id/map"
+    android:name="com.google.android.gms.maps.SupportMapFragment"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_below="@id/toolbar_layout"
+    tools:context="appathon17.driversleep.MapsActivity" />
+
+  <Button
+    android:id="@+id/button3"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_alignBaseline="@+id/button4"
+    android:layout_alignBottom="@+id/button4"
+    android:layout_alignParentEnd="true"
+    android:layout_marginEnd="56dp"
+    android:onClick="clearingMap"
+    android:text="Reset" />
+
+  <Button
+    android:id="@+id/button4"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_alignParentBottom="true"
+    android:layout_alignParentStart="true"
+    android:layout_marginBottom="15dp"
+    android:layout_marginStart="61dp"
+    android:onClick="goTo"
+    android:text="Home" />
+
+
+</RelativeLayout>

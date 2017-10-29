@@ -22,7 +22,10 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 import appathon17.driversleep.database.DbHelper;
 import appathon17.driversleep.database.DbOpenHelper;
@@ -38,10 +41,8 @@ import com.google.android.gms.vision.face.Face;
 import com.google.android.gms.vision.face.FaceDetector;
 import java.io.IOException;
 
-import static com.google.android.gms.vision.face.FaceDetector.ALL_CLASSIFICATIONS;
-import static com.google.android.gms.vision.face.FaceDetector.ALL_LANDMARKS;
-
-public class MainActivity extends AppCompatActivity implements LocationListener {
+public class MainActivity extends AppCompatActivity
+    implements LocationListener, Toolbar.OnMenuItemClickListener {
 
   private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -76,11 +77,16 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
   private static final long LOCATION_UPDATE_MIN_INTERVAL = 300;
   private static final float LOCATION_UPDATE_MIN_DIST = 0;
 
+  private Toolbar mToolbar;
+
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
+
+    mToolbar = findViewById(R.id.toolbar);
+    initToolbar();
 
     mPreview = findViewById(R.id.preview);
     mGraphicOverlay = findViewById(R.id.faceOverlay);
@@ -91,6 +97,41 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     } else {
       requestAllPermissions();
     }
+  }
+
+  private void initToolbar() {
+    mToolbar.setTitle("Doze Tracker");
+    mToolbar.inflateMenu(R.menu.navigation);
+    mToolbar.setOnMenuItemClickListener(this);
+    //mToolbar.setNavigationIcon(R.drawable.ic_layers);
+    /*if (getSupportActionBar() != null) {
+      getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+      getSupportActionBar().setDisplayShowHomeEnabled(true);
+    }*/
+    /*mToolbar.setNavigationOnClickListener(new OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        onBackPressed();
+      }
+    });*/
+  }
+
+  @Override
+  public boolean onMenuItemClick(MenuItem item) {
+    switch (item.getItemId()) {
+      case R.id.nav_item_maps:
+        Intent intent = new Intent(this, MapsActivity.class);
+        startActivity(intent);
+        return true;
+      case R.id.nav_item_charts:
+        Intent intent2 = new Intent(this, MapsActivity.class);
+        startActivity(intent2);
+        return true;
+      case R.id.nav_item_settings:
+
+        return true;
+    }
+    return super.onOptionsItemSelected(item);
   }
 
   private void allPermissionsCheckedAction() {
@@ -105,6 +146,11 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
   private void requestAllPermissions() {
     ActivityCompat.requestPermissions(this, REQUIRED_PERMISSIONS, PERM_REQ_CODE_ALL);
+  }
+
+  public void goToAnActivity(View view) {
+    Intent Intent = new Intent(this, MapsActivity.class);
+    startActivity(Intent);
   }
 
   private boolean checkAllPerms() {
