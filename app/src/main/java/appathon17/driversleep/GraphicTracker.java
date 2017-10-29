@@ -57,7 +57,7 @@ class GraphicTracker<T> extends Tracker<T> {
   public void onUpdate(Detector.Detections<T> detectionResults, T item) {
     mOverlay.add(mGraphic);
     mGraphic.updateItem(item);
-    past.update((Face)item);
+    past.update((Face) item);
     if (past.isSleep() && !mp.isPlaying()) {
         mp.start();
     }

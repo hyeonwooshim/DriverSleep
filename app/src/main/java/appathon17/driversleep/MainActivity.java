@@ -17,6 +17,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
+import appathon17.driversleep.database.DbOpenHelper;
+import appathon17.driversleep.logging.Logger;
 import appathon17.driversleep.ui.CameraSourcePreview;
 import appathon17.driversleep.ui.GraphicOverlay;
 import com.google.android.gms.common.ConnectionResult;
@@ -24,6 +26,7 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.MultiDetector;
 import com.google.android.gms.vision.MultiProcessor;
+import com.google.android.gms.vision.face.Face;
 import com.google.android.gms.vision.face.FaceDetector;
 import java.io.IOException;
 
@@ -41,6 +44,10 @@ public class MainActivity extends AppCompatActivity {
   private CameraSourcePreview mPreview;
   private GraphicOverlay mGraphicOverlay;
   private MediaPlayer mp;
+  private FaceTrackerCallback callback;
+
+  // Snippet
+  private DbOpenHelper dbOpenHelper;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +64,12 @@ public class MainActivity extends AppCompatActivity {
     } else {
       requestCameraPermission();
     }
+
+    // Snippet
+    dbOpenHelper = new DbOpenHelper(this);
+    Logger logger = new Logger(dbOpenHelper.getWritableDatabase(), 1);
+    logger.begin();
+    logger.log("Seriwjerowiejr", 01294.214090, 0.2492094);
   }
 
   /**
@@ -91,7 +104,9 @@ public class MainActivity extends AppCompatActivity {
         .show();
   }
 
-
+  interface FaceTrackerCallback {
+    void onUpdate(Face item);
+  }
 
   /**
    * Creates and starts the camera.  Note that this uses a higher resolution in comparison
@@ -110,6 +125,12 @@ public class MainActivity extends AppCompatActivity {
             .setLandmarkType(ALL_LANDMARKS) // Get all landmarks (track eyes)
             .setClassificationType(ALL_CLASSIFICATIONS) // Allow probabilities to be computed
             .build();
+    callback = new FaceTrackerCallback() {
+      @Override
+      public void onUpdate(Face item) {
+
+      }
+    };
     mp = MediaPlayer.create(context, R.raw.buzzer);
     FaceTrackerFactory faceFactory = new FaceTrackerFactory(mGraphicOverlay, mp);
     faceDetector.setProcessor(
