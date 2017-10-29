@@ -24,7 +24,6 @@ public class DbHelper {
   }
 
   public List<Integer> getAllTripIds() {
-
     return null;
   }
 

@@ -13,7 +13,13 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import java.util.List;
 import java.util.Random;
+
+import appathon17.driversleep.database.DbHelper;
+import appathon17.driversleep.database.DbOpenHelper;
+import appathon17.driversleep.logging.Trip;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -47,7 +53,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.addMarker(new MarkerOptions().position(new LatLng(x, y)));
     }
 
-
     /**
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
@@ -60,10 +65,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-
         // Add a marker in Sydney and move the camera
         LatLng sydney = new LatLng(-34, 151);
         mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+
+        DbOpenHelper openHelper = new DbOpenHelper(this);
+        DbHelper dbHelper = new DbHelper(openHelper);
+
+        List<Integer> allTripIds = dbHelper.getAllTripIds();
+        List<Trip> allTripInfos = dbHelper.getAllTripInfos();
+        List<Trip> allTripsWithEvents = dbHelper.getAllTripsWithEventList();
     }
 }
