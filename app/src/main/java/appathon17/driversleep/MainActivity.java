@@ -103,12 +103,12 @@ public class MainActivity extends AppCompatActivity
         if (tripRunning) {
           logger.conclude();
           tripRunning = false;
-          mFab.setImageResource(R.drawable.ic_stop_white_24dp);
+          mFab.setImageResource(R.drawable.ic_play_arrow_white_24dp);
         } else {
           logger = new Logger(dbOpenHelper.getWritableDatabase(), dbHelper.getMaxTripId() + 1);
           logger.begin();
           tripRunning = true;
-          mFab.setImageResource(R.drawable.ic_play_arrow_white_24dp);
+          mFab.setImageResource(R.drawable.ic_stop_white_24dp);
         }
       }
     });
@@ -274,8 +274,10 @@ public class MainActivity extends AppCompatActivity
     callback = new FaceTrackerCallback() {
       @Override
       public void onUpdate(Face item) {
+        Log.d(TAG, (logger != null) + " ... " + history.isSleep() + "..." + !mp.isPlaying());
+        Log.d(TAG, item.toString());
         history.update(item);
-        if(history.isSleep() && !mp.isPlaying() && logger.isBegun()) {
+        if (history.isSleep() && !mp.isPlaying() && logger != null && logger.isBegun()) {
           mp.start();
           history.clear();
           if (mLocation != null) {
@@ -292,7 +294,7 @@ public class MainActivity extends AppCompatActivity
         }
       }
       public void wavPlayer() {
-        if(!mp.isPlaying() && logger.isBegun()) {
+        if(!mp.isPlaying() && logger != null && logger.isBegun()) {
           mp.start();
         }
       }

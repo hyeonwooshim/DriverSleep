@@ -14,10 +14,12 @@ import java.util.Queue;
 class CheckSleep {
   private Queue<Boolean> history;
   private int numSleep;
+  private int numFrames = 6;
+  private double proportion = 0.70;
 
   CheckSleep() {
     history = new LinkedList<>();
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < numFrames; i++) {
       history.add(false); // set up to check history of past 4 frames
     }
     numSleep = 0;
@@ -39,12 +41,12 @@ class CheckSleep {
   }
 
   public boolean isSleep() {
-    return numSleep >= 3; // if 3 of the past 4 frames have the eyes closed, return true
+    return numSleep >= numFrames * proportion;
   }
 
   public void clear() {
     history.clear();
-    for (int i = 0; i < 4; i++){
+    for (int i = 0; i < numFrames; i++){
       history.add(false);
     }
     numSleep = 0;

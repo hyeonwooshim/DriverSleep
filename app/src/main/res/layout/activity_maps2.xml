@@ -22,23 +22,12 @@
     android:id="@+id/button3"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_alignBaseline="@+id/button4"
-    android:layout_alignBottom="@+id/button4"
+    android:layout_alignParentBottom="true"
+    android:layout_marginBottom="15dp"
     android:layout_alignParentEnd="true"
     android:layout_marginEnd="39dp"
     android:onClick="clearingMap"
     android:text="Reset" />
-
-  <Button
-    android:id="@+id/button4"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_alignParentBottom="true"
-    android:layout_marginBottom="15dp"
-    android:layout_marginEnd="20dp"
-    android:layout_toStartOf="@+id/button5"
-    android:onClick="goTo"
-    android:text="Home" />
 
   <Button
     android:id="@+id/button5"

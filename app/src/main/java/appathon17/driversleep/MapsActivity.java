@@ -12,7 +12,13 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import java.util.List;
 import java.util.Random;
+
+import appathon17.driversleep.database.DbHelper;
+import appathon17.driversleep.database.DbOpenHelper;
+import appathon17.driversleep.logging.Trip;
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -59,31 +65,37 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
   }
 
+    /**
+     * Manipulates the map once available.
+     * This callback is triggered when the map is ready to be used.
+     * This is where we can add markers or lines, add listeners or move the camera. In this case,
+     * we just add a marker near Sydney, Australia.
+     * If Google Play services is not installed on the device, the user will be prompted to install
+     * it inside the SupportMapFragment. This method will only be triggered once the user has
+     * installed Google Play services and returned to the app.
+     */
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+        // Add a marker in Sydney and move the camera
+        LatLng tech = new LatLng(33.7756, -84.3963);
+        mMap.addMarker(new MarkerOptions().position(tech).title("GA TECH"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(tech, 15));
+
+        DbOpenHelper openHelper = new DbOpenHelper(this);
+        DbHelper dbHelper = new DbHelper(openHelper);
+
+        List<Integer> allTripIds = dbHelper.getAllTripIds();
+        List<Trip> allTripInfos = dbHelper.getAllTripInfos();
+        List<Trip> allTripsWithEvents = dbHelper.getAllTripsWithEventList();
+    }
+
   public void randomMarkers(View view) {
     Random n = new Random();
-    int x = n.nextInt(90) - 30;
-    int y = n.nextInt(90) - 30;
+    double x = n.nextDouble() * 0.04;
+    double y = n.nextDouble() * 0.04;
+    x = x+33.7756 - 0.02;
+    y = y-84.3963 - 0.02;
     mMap.addMarker(new MarkerOptions().position(new LatLng(x, y)));
   }
-
-
-  /**
-   * Manipulates the map once available.
-   * This callback is triggered when the map is ready to be used.
-   * This is where we can add markers or lines, add listeners or move the camera. In this case,
-   * we just add a marker near Sydney, Australia.
-   * If Google Play services is not installed on the device, the user will be prompted to install
-   * it inside the SupportMapFragment. This method will only be triggered once the user has
-   * installed Google Play services and returned to the app.
-   */
-  @Override
-  public void onMapReady(GoogleMap googleMap) {
-    mMap = googleMap;
-
-    LatLng gatech = new LatLng(33.7756, -84.3963); //33.7756° N, 84.3963° W
-    //mMap.addMarker(new MarkerOptions().position(gatech).title("Marker in Sydney"));
-    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(gatech, 15));
-  }
-
-
 }

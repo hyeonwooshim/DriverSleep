@@ -10,32 +10,40 @@
   tools:context="appathon17.driversleep.MainActivity">
 
   <include layout="@layout/toolbar" />
-
-  <FrameLayout
+  
+  <RelativeLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-
-    <appathon17.driversleep.ui.CameraSourcePreview
-      android:id="@+id/preview"
+    <FrameLayout
       android:layout_width="match_parent"
       android:layout_height="match_parent">
 
-    </appathon17.driversleep.ui.CameraSourcePreview>
+      <appathon17.driversleep.ui.CameraSourcePreview
+        android:id="@+id/preview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-    <appathon17.driversleep.ui.GraphicOverlay
-      android:id="@+id/faceOverlay"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"/>
-  </FrameLayout>
+      </appathon17.driversleep.ui.CameraSourcePreview>
 
-  <android.support.design.widget.FloatingActionButton
-    android:id="@+id/trip_button"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_margin="16dp"
-    app:srcCompat="@drawable/ic_play_arrow_white_24dp"
-    app:elevation="4dp"
-    android:layout_gravity="bottom|end"
-    />
+      <appathon17.driversleep.ui.GraphicOverlay
+        android:id="@+id/faceOverlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+    </FrameLayout>
+
+    <android.support.design.widget.FloatingActionButton
+      android:id="@+id/trip_button"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:padding="20dp"
+      android:layout_margin="16dp"
+      android:layout_alignParentBottom="true"
+      android:layout_alignParentEnd="true"
+      app:srcCompat="@drawable/ic_play_arrow_white_24dp"
+      app:elevation="4dp" />
+
+  </RelativeLayout>
+
+
 
 </LinearLayout>
