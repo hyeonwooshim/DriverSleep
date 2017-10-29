@@ -19,6 +19,7 @@ import android.location.LocationManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -78,12 +79,39 @@ public class MainActivity extends AppCompatActivity
   private static final float LOCATION_UPDATE_MIN_DIST = 0;
 
   private Toolbar mToolbar;
+  private FloatingActionButton mFab;
+  private boolean tripRunning = false;
 
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
+
+    dbOpenHelper = new DbOpenHelper(this);
+    dbHelper = new DbHelper(dbOpenHelper);
+
+    mFab = findViewById(R.id.trip_button);
+    mFab.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        if (!checkAllPerms()) {
+          requestAllPermissions();
+          return;
+        }
+
+        if (tripRunning) {
+          logger.conclude();
+          tripRunning = false;
+          mFab.setImageResource(R.drawable.ic_stop_white_24dp);
+        } else {
+          logger = new Logger(dbOpenHelper.getWritableDatabase(), dbHelper.getMaxTripId() + 1);
+          logger.begin();
+          tripRunning = true;
+          mFab.setImageResource(R.drawable.ic_play_arrow_white_24dp);
+        }
+      }
+    });
 
     mToolbar = findViewById(R.id.toolbar);
     initToolbar();
@@ -103,17 +131,6 @@ public class MainActivity extends AppCompatActivity
     mToolbar.setTitle("Doze Tracker");
     mToolbar.inflateMenu(R.menu.navigation);
     mToolbar.setOnMenuItemClickListener(this);
-    //mToolbar.setNavigationIcon(R.drawable.ic_layers);
-    /*if (getSupportActionBar() != null) {
-      getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-      getSupportActionBar().setDisplayShowHomeEnabled(true);
-    }*/
-    /*mToolbar.setNavigationOnClickListener(new OnClickListener() {
-      @Override
-      public void onClick(View view) {
-        onBackPressed();
-      }
-    });*/
   }
 
   @Override
@@ -137,11 +154,6 @@ public class MainActivity extends AppCompatActivity
   private void allPermissionsCheckedAction() {
     createCameraSource();
     initLocation();
-
-    dbOpenHelper = new DbOpenHelper(this);
-    dbHelper = new DbHelper(dbOpenHelper);
-    logger = new Logger(dbOpenHelper.getWritableDatabase(), dbHelper.getMaxTripId() + 1);
-    logger.begin();
   }
 
   private void requestAllPermissions() {
@@ -263,20 +275,24 @@ public class MainActivity extends AppCompatActivity
       @Override
       public void onUpdate(Face item) {
         history.update(item);
-        if(history.isSleep() && !mp.isPlaying()) {
+        if(history.isSleep() && !mp.isPlaying() && logger.isBegun()) {
           mp.start();
           history.clear();
           if (mLocation != null) {
             Log.d(TAG, "mLocation: " + mLocation);
-            logger.log("Sleep", mLocation.getLatitude(), mLocation.getLongitude());
+            if (logger != null && logger.isBegun()) {
+              logger.log("Sleep", mLocation.getLatitude(), mLocation.getLongitude());
+            }
           } else {
             Log.d(TAG, "mLocation: NULL");
-            logger.log("Sleep");
+            if (logger != null && logger.isBegun()) {
+              logger.log("Sleep");
+            }
           }
         }
       }
       public void wavPlayer() {
-        if(!mp.isPlaying()) {
+        if(!mp.isPlaying() && logger.isBegun()) {
           mp.start();
         }
       }

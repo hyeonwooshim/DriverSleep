@@ -79,7 +79,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
   @Override
   public void onMapReady(GoogleMap googleMap) {
     mMap = googleMap;
-    
+
     LatLng gatech = new LatLng(33.7756, -84.3963); //33.7756° N, 84.3963° W
     //mMap.addMarker(new MarkerOptions().position(gatech).title("Marker in Sydney"));
     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(gatech, 15));
