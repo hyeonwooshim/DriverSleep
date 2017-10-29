@@ -32,14 +32,12 @@ import com.google.android.gms.vision.face.Face;
 class GraphicTracker<T> extends Tracker<T> {
   private GraphicOverlay mOverlay;
   private TrackedGraphic<T> mGraphic;
-  private CheckSleep past;
-  private MediaPlayer mp;
+  private MainActivity.FaceTrackerCallback callback;
 
-  GraphicTracker(GraphicOverlay overlay, TrackedGraphic<T> graphic, MediaPlayer media) {
+  GraphicTracker(GraphicOverlay overlay, TrackedGraphic<T> graphic, MainActivity.FaceTrackerCallback callback) {
     mOverlay = overlay;
     mGraphic = graphic;
-    past = new CheckSleep();
-    mp = media;
+    this.callback = callback;
   }
 
   /**
@@ -57,10 +55,7 @@ class GraphicTracker<T> extends Tracker<T> {
   public void onUpdate(Detector.Detections<T> detectionResults, T item) {
     mOverlay.add(mGraphic);
     mGraphic.updateItem(item);
-    past.update((Face) item);
-    if (past.isSleep() && !mp.isPlaying()) {
-        mp.start();
-    }
+    callback.onUpdate((Face) item);
   }
 
   /**
@@ -71,6 +66,7 @@ class GraphicTracker<T> extends Tracker<T> {
   @Override
   public void onMissing(Detector.Detections<T> detectionResults) {
     mOverlay.remove(mGraphic);
+    callback.wavPlayer();
   }
 
   /**

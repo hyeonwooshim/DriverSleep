@@ -17,15 +17,14 @@ class CheckSleep {
 
   CheckSleep() {
     history = new LinkedList<>();
-    for (int i = 0; i < 4 ; i++) {
+    for (int i = 0; i < 4; i++) {
       history.add(false); // set up to check history of past 4 frames
     }
     numSleep = 0;
   }
 
   public void update(Face face) {
-    if (face.getIsLeftEyeOpenProbability() <= 0.55 && face.getIsRightEyeOpenProbability() <= 0.55) {
-      System.out.println(face.getIsLeftEyeOpenProbability());
+    if (face.getIsLeftEyeOpenProbability() <= 0.4 && face.getIsRightEyeOpenProbability() <= 0.4) {
       if (!history.remove()) {
         numSleep++;
       }
@@ -41,5 +40,13 @@ class CheckSleep {
 
   public boolean isSleep() {
     return numSleep >= 3; // if 3 of the past 4 frames have the eyes closed, return true
+  }
+
+  public void clear() {
+    history.clear();
+    for (int i = 0; i < 4; i++){
+      history.add(false);
+    }
+    numSleep = 0;
   }
 }
