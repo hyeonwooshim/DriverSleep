@@ -15,7 +15,7 @@ class CheckSleep {
   private Queue<Boolean> history;
   private int numSleep;
   private int numFrames = 6;
-  private double proportion = 0.70;
+  private double proportion = 0.80;
 
   CheckSleep() {
     history = new LinkedList<>();

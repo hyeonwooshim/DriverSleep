@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.View.OnClickListener;
+import appathon17.driversleep.logging.Event;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -85,9 +86,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         DbOpenHelper openHelper = new DbOpenHelper(this);
         DbHelper dbHelper = new DbHelper(openHelper);
 
-        List<Integer> allTripIds = dbHelper.getAllTripIds();
-        List<Trip> allTripInfos = dbHelper.getAllTripInfos();
-        List<Trip> allTripsWithEvents = dbHelper.getAllTripsWithEventList();
+        List<Event> lastEvents = dbHelper.getAllEventsFromTrip(dbHelper.getMaxTripId());
+        for (Event event : lastEvents) {
+          if (event.getLat() != null && event.getLng() != null) {
+            mMap.addMarker(new MarkerOptions().position(new LatLng(event.getLat(), event.getLng())).title("Fell asleep here!"));
+          }
+        }
     }
 
   public void randomMarkers(View view) {
