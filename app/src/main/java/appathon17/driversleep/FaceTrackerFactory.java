@@ -35,17 +35,17 @@ import com.google.android.gms.vision.face.Face;
  */
 class FaceTrackerFactory implements MultiProcessor.Factory<Face> {
   private GraphicOverlay mGraphicOverlay;
-  private MediaPlayer media;
+  private MainActivity.FaceTrackerCallback callback;
 
-  FaceTrackerFactory(GraphicOverlay graphicOverlay, MediaPlayer mp) {
+  FaceTrackerFactory(GraphicOverlay graphicOverlay, MainActivity.FaceTrackerCallback callback) {
     mGraphicOverlay = graphicOverlay;
-    media = mp;
+    this.callback = callback;
   }
 
   @Override
   public Tracker<Face> create(Face face) {
     FaceGraphic graphic = new FaceGraphic(mGraphicOverlay);
-    return new GraphicTracker<>(mGraphicOverlay, graphic, media);
+    return new GraphicTracker<>(mGraphicOverlay, graphic, callback);
   }
 }
 

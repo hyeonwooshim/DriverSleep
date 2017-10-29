@@ -89,6 +89,19 @@ public class Logger {
     long newRowId = db.insert(EventEntry.TABLE_NAME, null, values);
   }
 
+  public void log(String eventType) {
+    if (!begun) throw new IllegalStateException("Cannot log when logging hasn't begun!");
+    if (!db.isOpen()) return;
+
+    // Create a new map of values, where column names are the keys
+    ContentValues values = new ContentValues();
+    values.put(EventEntry.CN_TIMESTAMP, System.currentTimeMillis());
+    values.put(EventEntry.CN_TRIP_ID, tripID);
+    values.put(EventEntry.CN_TYPE, eventType);
+
+    long newRowId = db.insert(EventEntry.TABLE_NAME, null, values);
+  }
+
   public void conclude() {
     if (!begun) {
       throw new IllegalStateException("Cannot conclude when logging hasn't even begun!");
@@ -105,5 +118,9 @@ public class Logger {
         selection,
         null);
     Log.d(TAG, count + " trip entries updated.");
+  }
+
+  public boolean isBegun() {
+    return begun;
   }
 }

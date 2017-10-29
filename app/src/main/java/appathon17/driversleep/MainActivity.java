@@ -24,6 +24,9 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Toast;
+import appathon17.driversleep.database.DbHelper;
+import appathon17.driversleep.database.DbOpenHelper;
+import appathon17.driversleep.logging.Logger;
 import appathon17.driversleep.ui.CameraSourcePreview;
 import appathon17.driversleep.ui.GraphicOverlay;
 import com.google.android.gms.common.ConnectionResult;
@@ -35,7 +38,11 @@ import com.google.android.gms.vision.face.Face;
 import com.google.android.gms.vision.face.FaceDetector;
 import java.io.IOException;
 
+import static com.google.android.gms.vision.face.FaceDetector.ALL_CLASSIFICATIONS;
+import static com.google.android.gms.vision.face.FaceDetector.ALL_LANDMARKS;
+
 public class MainActivity extends AppCompatActivity implements LocationListener {
+
   private static final String TAG = MainActivity.class.getSimpleName();
 
   private static final int RC_HANDLE_GMS = 9001;
@@ -54,11 +61,20 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
   private GraphicOverlay mGraphicOverlay;
   private MediaPlayer mp;
 
+  private FaceTrackerCallback callback;
+  private CheckSleep history = new CheckSleep();
+  private int tripID = 1;
+
+  // Snippet
+  private DbOpenHelper dbOpenHelper;
+  private DbHelper dbHelper;
+  private Logger logger;
+
   private LocationManager mLocationManager;
   private Location mLocation;
 
   private static final long LOCATION_UPDATE_MIN_INTERVAL = 300;
-  private static final float LOCATION_UPDATE_MIN_DIST = 5;
+  private static final float LOCATION_UPDATE_MIN_DIST = 0;
 
 
   @Override
@@ -70,7 +86,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     mGraphicOverlay = findViewById(R.id.faceOverlay);
 
     // Check all required permissions first!
-    if (!checkAllPerms()) {
+    if (checkAllPerms()) {
       allPermissionsCheckedAction();
     } else {
       requestAllPermissions();
@@ -79,6 +95,12 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
   private void allPermissionsCheckedAction() {
     createCameraSource();
+    initLocation();
+
+    dbOpenHelper = new DbOpenHelper(this);
+    dbHelper = new DbHelper(dbOpenHelper);
+    logger = new Logger(dbOpenHelper.getWritableDatabase(), dbHelper.getMaxTripId() + 1);
+    logger.begin();
   }
 
   private void requestAllPermissions() {
@@ -118,12 +140,12 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
       builder.setMessage(R.string.enable_gps)
           .setPositiveButton("Ok", new OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-              // FIRE ZE MISSILES!
+              // TODO: actually get them to the settings
             }
           })
           .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-              // User cancelled the dialog
+
             }
           });
       builder.create().show();
@@ -136,6 +158,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
     mLocation = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 
+    Log.d(TAG, "Location initialization complete.");
   }
 
   @Override
@@ -144,27 +167,24 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
   }
 
   @Override
-  public void onStatusChanged(String s, int i, Bundle bundle) {
-
-  }
+  public void onStatusChanged(String s, int i, Bundle bundle) {}
 
   @Override
-  public void onProviderEnabled(String s) {
-
-  }
+  public void onProviderEnabled(String s) {}
 
   @Override
   public void onProviderDisabled(String s) {
+    mLocation = null;
     AlertDialog.Builder builder = new AlertDialog.Builder(this);
     builder.setMessage(R.string.enable_gps)
         .setPositiveButton("Ok", new OnClickListener() {
           public void onClick(DialogInterface dialog, int id) {
-            // FIRE ZE MISSILES!
+            // TODO: actually get them to the settings
           }
         })
         .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
           public void onClick(DialogInterface dialog, int id) {
-            // User cancelled the dialog
+
           }
         });
     builder.create().show();
@@ -172,6 +192,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
   interface FaceTrackerCallback {
     void onUpdate(Face item);
+    void wavPlayer();
   }
 
   /**
@@ -192,10 +213,32 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         .setClassificationType(ALL_CLASSIFICATIONS) // Allow probabilities to be computed
         .build();
 
+    callback = new FaceTrackerCallback() {
+      @Override
+      public void onUpdate(Face item) {
+        history.update(item);
+        if(history.isSleep() && !mp.isPlaying()) {
+          mp.start();
+          history.clear();
+          if (mLocation != null) {
+            Log.d(TAG, "mLocation: " + mLocation);
+            logger.log("Sleep", mLocation.getLatitude(), mLocation.getLongitude());
+          } else {
+            Log.d(TAG, "mLocation: NULL");
+            logger.log("Sleep");
+          }
+        }
+      }
+      public void wavPlayer() {
+        if(!mp.isPlaying()) {
+          mp.start();
+        }
+      }
+    };
+
     mp = MediaPlayer.create(context, R.raw.buzzer);
-    FaceTrackerFactory faceFactory = new FaceTrackerFactory(mGraphicOverlay, mp);
-    faceDetector.setProcessor(
-        new MultiProcessor.Builder<>(faceFactory).build());
+    FaceTrackerFactory faceFactory = new FaceTrackerFactory(mGraphicOverlay, callback);
+    faceDetector.setProcessor(new MultiProcessor.Builder<>(faceFactory).build());
 
     // A multi-detector groups the two detectors together as one detector.  All images received
     // by this detector from the camera will be sent to each of the underlying detectors, which
@@ -245,7 +288,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
   @Override
   protected void onResume() {
     super.onResume();
-
     startCameraSource();
   }
 
@@ -265,6 +307,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
   @Override
   protected void onDestroy() {
     super.onDestroy();
+    if (logger != null && logger.isBegun()) logger.conclude();
+    if (dbOpenHelper != null) dbOpenHelper.close();
     if (mCameraSource != null) {
       mCameraSource.release();
     }
@@ -303,6 +347,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
           if (!good) {
             Log.e(TAG, "Not all required permissions granted. Requesting again.");
             requestAllPermissions();
+          } else {
+            allPermissionsCheckedAction();
           }
         }
         break;

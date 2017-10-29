@@ -7,6 +7,7 @@ import appathon17.driversleep.database.DbContract.TripEntry;
 import appathon17.driversleep.logging.Event;
 import appathon17.driversleep.logging.Trip;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -24,8 +25,31 @@ public class DbHelper {
   }
 
   public List<Integer> getAllTripIds() {
+    String[] projection = {
+        TripEntry.CN_TRIP_ID
+    };
 
-    return null;
+    Cursor cursor = rdb.query(
+        TripEntry.TABLE_NAME,                     // The table to query
+        projection,                               // The columns to return
+        null,                                // The columns for the WHERE clause
+        null,                            // The values for the WHERE clause
+        null,                                     // don't group the rows
+        null,                                     // don't filter by row groups
+        null                                 // The sort order
+    );
+
+    List<Integer> ids = new ArrayList<>();
+    while(cursor.moveToNext()) {
+      int itemId = cursor.getInt(cursor.getColumnIndexOrThrow(TripEntry.CN_TRIP_ID));
+      ids.add(itemId);
+    }
+    cursor.close();
+    return ids;
+  }
+
+  public int getMaxTripId() {
+    return Collections.max(getAllTripIds());
   }
 
   public List<Trip> getAllTripInfos() {
@@ -91,8 +115,13 @@ public class DbHelper {
       long time = cursor.getLong(cursor.getColumnIndexOrThrow(EventEntry.CN_TIMESTAMP));
       int id = cursor.getInt(cursor.getColumnIndexOrThrow(EventEntry.CN_TRIP_ID));
       String type = cursor.getString(cursor.getColumnIndexOrThrow(EventEntry.CN_TYPE));
-      double lat = cursor.getDouble(cursor.getColumnIndexOrThrow(EventEntry.CN_LAT));
-      double lng = cursor.getDouble(cursor.getColumnIndexOrThrow(EventEntry.CN_LNG));
+
+      Double lat = null;
+      if (!cursor.isNull(cursor.getColumnIndexOrThrow(EventEntry.CN_LAT)))
+        lat = cursor.getDouble(cursor.getColumnIndexOrThrow(EventEntry.CN_LAT));
+      Double lng = null;
+      if (!cursor.isNull(cursor.getColumnIndexOrThrow(EventEntry.CN_LNG)))
+        lng = cursor.getDouble(cursor.getColumnIndexOrThrow(EventEntry.CN_LNG));
 
       events.add(new Event(id, time, type, lat, lng));
     }

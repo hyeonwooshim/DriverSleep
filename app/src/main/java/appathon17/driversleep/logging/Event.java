@@ -9,10 +9,10 @@ public class Event {
   private int tripId;
   private long time;
   private String type;
-  private double lat;
-  private double lng;
+  private Double lat;
+  private Double lng;
 
-  public Event(int tripId, long time, String type, double lat, double lng) {
+  public Event(int tripId, long time, String type, Double lat, Double lng) {
     this.tripId = tripId;
     this.time = time;
     this.type = type;
@@ -32,11 +32,11 @@ public class Event {
     return type;
   }
 
-  public double getLat() {
+  public Double getLat() {
     return lat;
   }
 
-  public double getLng() {
+  public Double getLng() {
     return lng;
   }
 
