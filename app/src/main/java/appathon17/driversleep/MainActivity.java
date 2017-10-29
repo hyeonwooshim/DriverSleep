@@ -30,7 +30,6 @@ import com.google.android.gms.vision.face.Face;
 import com.google.android.gms.vision.face.FaceDetector;
 import java.io.IOException;
 
-
 import static com.google.android.gms.vision.face.FaceDetector.ALL_CLASSIFICATIONS;
 import static com.google.android.gms.vision.face.FaceDetector.ALL_LANDMARKS;
 
@@ -45,9 +44,12 @@ public class MainActivity extends AppCompatActivity {
   private GraphicOverlay mGraphicOverlay;
   private MediaPlayer mp;
   private FaceTrackerCallback callback;
+  private CheckSleep history = new CheckSleep();
+  private int tripID = 1;
 
   // Snippet
   private DbOpenHelper dbOpenHelper;
+  private Logger logger;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -67,9 +69,8 @@ public class MainActivity extends AppCompatActivity {
 
     // Snippet
     dbOpenHelper = new DbOpenHelper(this);
-    Logger logger = new Logger(dbOpenHelper.getWritableDatabase(), 1);
+    logger = new Logger(dbOpenHelper.getWritableDatabase(), tripID++);
     logger.begin();
-    logger.log("Seriwjerowiejr", 01294.214090, 0.2492094);
   }
 
   /**
@@ -106,6 +107,7 @@ public class MainActivity extends AppCompatActivity {
 
   interface FaceTrackerCallback {
     void onUpdate(Face item);
+    void wavPlayer();
   }
 
   /**
@@ -125,14 +127,28 @@ public class MainActivity extends AppCompatActivity {
             .setLandmarkType(ALL_LANDMARKS) // Get all landmarks (track eyes)
             .setClassificationType(ALL_CLASSIFICATIONS) // Allow probabilities to be computed
             .build();
+
+
     callback = new FaceTrackerCallback() {
       @Override
       public void onUpdate(Face item) {
-
+        history.update(item);
+        if(history.isSleep() && !mp.isPlaying()) {
+            mp.start();
+            history.clear();
+            logger.log("Pay Attention!", 32.3,32.4); // TODO: replace with actual values later
+        }
+      }
+      public void wavPlayer() {
+          if(!mp.isPlaying()) {
+              mp.start();
+          }
       }
     };
+
+
     mp = MediaPlayer.create(context, R.raw.buzzer);
-    FaceTrackerFactory faceFactory = new FaceTrackerFactory(mGraphicOverlay, mp);
+    FaceTrackerFactory faceFactory = new FaceTrackerFactory(mGraphicOverlay, callback);
     faceDetector.setProcessor(
         new MultiProcessor.Builder<>(faceFactory).build());
 
@@ -204,6 +220,7 @@ public class MainActivity extends AppCompatActivity {
   @Override
   protected void onDestroy() {
     super.onDestroy();
+    logger.conclude();
     if (mCameraSource != null) {
       mCameraSource.release();
     }
