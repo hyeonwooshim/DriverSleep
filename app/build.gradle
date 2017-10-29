@@ -38,8 +38,4 @@ dependencies {
 
     // Google Mobile Vision API
     compile 'com.google.android.gms:play-services-vision:11.4.2'
-
-    // Butter Knife for easier View binding for Activities
-    compile 'com.jakewharton:butterknife:8.8.1'
-    annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
 }

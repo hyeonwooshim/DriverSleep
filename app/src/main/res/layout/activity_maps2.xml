@@ -1,51 +1,54 @@
 <RelativeLayout
-xmlns:android="http://schemas.android.com/apk/res/android"
-android:id="@+id/topLayout"
-android:orientation="vertical"
-android:layout_width="match_parent"
-android:layout_height="match_parent"
-android:keepScreenOn="true">
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:id="@+id/topLayout"
+  android:orientation="vertical"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:keepScreenOn="true">
 
-    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:map="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/map"
-        android:name="com.google.android.gms.maps.SupportMapFragment"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context="appathon17.driversleep.MapsActivity" />
+  <include layout="@layout/toolbar"
+    android:id="@+id/toolbar_layout"/>
 
-    <Button
-        android:id="@+id/button3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/button4"
-        android:layout_alignBottom="@+id/button4"
-        android:layout_alignParentEnd="true"
-        android:layout_marginEnd="39dp"
-        android:onClick="clearingMap"
-        android:text="Reset" />
+  <fragment
+    android:id="@+id/map"
+    android:name="com.google.android.gms.maps.SupportMapFragment"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_below="@id/toolbar_layout"
+    tools:context="appathon17.driversleep.MapsActivity" />
 
-    <Button
-        android:id="@+id/button4"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="15dp"
-        android:layout_marginEnd="20dp"
-        android:layout_toStartOf="@+id/button5"
-        android:onClick="goTo"
-        android:text="Home" />
+  <Button
+    android:id="@+id/button3"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_alignBaseline="@+id/button4"
+    android:layout_alignBottom="@+id/button4"
+    android:layout_alignParentEnd="true"
+    android:layout_marginEnd="39dp"
+    android:onClick="clearingMap"
+    android:text="Reset" />
 
-    <Button
-        android:id="@+id/button5"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/button3"
-        android:layout_alignBottom="@+id/button3"
-        android:layout_centerHorizontal="true"
-        android:onClick="randomMarkers"
-        android:text="Random" />
+  <Button
+    android:id="@+id/button4"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_alignParentBottom="true"
+    android:layout_marginBottom="15dp"
+    android:layout_marginEnd="20dp"
+    android:layout_toStartOf="@+id/button5"
+    android:onClick="goTo"
+    android:text="Home" />
+
+  <Button
+    android:id="@+id/button5"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_alignBaseline="@+id/button3"
+    android:layout_alignBottom="@+id/button3"
+    android:layout_centerHorizontal="true"
+    android:onClick="randomMarkers"
+    android:text="Random" />
 
 
 </RelativeLayout>

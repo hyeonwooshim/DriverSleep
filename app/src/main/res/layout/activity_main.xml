@@ -1,39 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/topLayout"
-    android:orientation="vertical"
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:id="@+id/topLayout"
+  android:orientation="vertical"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:keepScreenOn="true"
+  tools:context="appathon17.driversleep.MainActivity" >
+
+  <include layout="@layout/toolbar" />
+
+  <FrameLayout
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:keepScreenOn="true">
+    android:layout_height="match_parent">
 
-  <Button
-      android:id="@+id/button1"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_alignParentEnd="true"
-      android:layout_alignParentTop="true"
-      android:layout_marginEnd="12dp"
-      android:layout_marginTop="11dp"
-      android:onClick="goToAnActivity"
-      android:text="Map" />
-
-  <appathon17.driversleep.ui.CameraSourcePreview
+    <appathon17.driversleep.ui.CameraSourcePreview
       android:id="@+id/preview"
-      android:layout_width="wrap_content"
-      android:layout_height="510dp"
-      android:layout_alignParentBottom="true"
-      android:layout_alignParentStart="true"
-      android:layout_weight="1">
+      android:layout_width="match_parent"
+      android:layout_height="match_parent">
 
-  </appathon17.driversleep.ui.CameraSourcePreview>
+    </appathon17.driversleep.ui.CameraSourcePreview>
 
-  <appathon17.driversleep.ui.GraphicOverlay
+    <appathon17.driversleep.ui.GraphicOverlay
       android:id="@+id/faceOverlay"
-      android:layout_width="fill_parent"
-      android:layout_height="510dp"
-      android:layout_alignParentLeft="true"
-      android:layout_alignParentStart="true"
-      android:layout_weight="1" />
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"/>
+  </FrameLayout>
 
-</RelativeLayout>
+
+
+</LinearLayout>

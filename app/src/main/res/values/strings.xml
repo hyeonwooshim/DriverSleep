@@ -1,13 +1,20 @@
 <resources>
-    <string name="app_name">DriverSleep</string>
+  <string name="app_name">DriverSleep</string>
 
-    <string name="low_storage_error">Low Storage!</string>
-    <string name="permission_camera_rationale">Need camera permission bro</string>
-    <string name="no_camera_permission">No camera permission bro</string>
-    <string name="ok">OK</string>
-    <string name="title_activity_maps">Map</string>
-    <string name="title_activity_map2">Map2Activity</string>
-    <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Notifications</string>
+  <string name="low_storage_error">Low Storage!</string>
+  <string name="permission_camera_rationale">Need camera permission bro</string>
+  <string name="no_camera_permission">No camera permission bro</string>
+  <string name="ok">OK</string>
+
+  <string name="permission_rationale">We need specific permissions for critical functions.</string>
+  <string name="permissions_required">Permissions Required</string>
+  <string name="enable_gps">Please enable GPS</string>
+
+  <string name="title_activity_maps">Map</string>
+  <string name="title_activity_map2">Map2Activity</string>
+  <string name="title_home">Home</string>
+  <string name="title_dashboard">Dashboard</string>
+  <string name="title_notifications">Notifications</string>
+  <string name="settings">Settings</string>
+
 </resources>
