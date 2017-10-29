@@ -72,6 +72,11 @@ public class MainActivity extends AppCompatActivity {
     logger.log("Seriwjerowiejr", 01294.214090, 0.2492094);
   }
 
+  public void goToAnActivity(View view) {
+    Intent Intent = new Intent(this, MapsActivity.class);
+    startActivity(Intent);
+  }
+
   /**
    * Handles the requesting of the camera permission.  This includes
    * showing a "Snackbar" message of why the permission is needed then
