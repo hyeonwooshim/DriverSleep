@@ -14,23 +14,32 @@ package appathon17.driversleep;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import android.media.MediaPlayer;
+import android.provider.MediaStore;
+
 import appathon17.driversleep.ui.GraphicOverlay;
 import com.google.android.gms.vision.Detector;
 import com.google.android.gms.vision.Tracker;
+import com.google.android.gms.vision.face.Face;
 
 /**
  * Generic tracker which is used for tracking either a face or a barcode (and can really be used for
  * any type of item).  This is used to receive newly detected items, add a graphical representation
  * to an overlay, update the graphics as the item changes, and remove the graphics when the item
  * goes away.
+ * Will only detect the most prominent face in our implementation
  */
 class GraphicTracker<T> extends Tracker<T> {
   private GraphicOverlay mOverlay;
   private TrackedGraphic<T> mGraphic;
+  private CheckSleep past;
+  private MediaPlayer mp;
 
-  GraphicTracker(GraphicOverlay overlay, TrackedGraphic<T> graphic) {
+  GraphicTracker(GraphicOverlay overlay, TrackedGraphic<T> graphic, MediaPlayer media) {
     mOverlay = overlay;
     mGraphic = graphic;
+    past = new CheckSleep();
+    mp = media;
   }
 
   /**
@@ -48,6 +57,10 @@ class GraphicTracker<T> extends Tracker<T> {
   public void onUpdate(Detector.Detections<T> detectionResults, T item) {
     mOverlay.add(mGraphic);
     mGraphic.updateItem(item);
+    past.update((Face)item);
+    if (past.isSleep() && !mp.isPlaying()) {
+        mp.start();
+    }
   }
 
   /**

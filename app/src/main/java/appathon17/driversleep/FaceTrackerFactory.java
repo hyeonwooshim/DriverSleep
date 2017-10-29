@@ -21,6 +21,9 @@ import android.graphics.Color;
 import android.graphics.Paint;
 
 import android.graphics.RectF;
+import android.media.MediaPlayer;
+import android.provider.MediaStore;
+
 import appathon17.driversleep.ui.GraphicOverlay;
 import com.google.android.gms.vision.MultiProcessor;
 import com.google.android.gms.vision.Tracker;
@@ -32,15 +35,17 @@ import com.google.android.gms.vision.face.Face;
  */
 class FaceTrackerFactory implements MultiProcessor.Factory<Face> {
   private GraphicOverlay mGraphicOverlay;
+  private MediaPlayer media;
 
-  FaceTrackerFactory(GraphicOverlay graphicOverlay) {
+  FaceTrackerFactory(GraphicOverlay graphicOverlay, MediaPlayer mp) {
     mGraphicOverlay = graphicOverlay;
+    media = mp;
   }
 
   @Override
   public Tracker<Face> create(Face face) {
     FaceGraphic graphic = new FaceGraphic(mGraphicOverlay);
-    return new GraphicTracker<>(mGraphicOverlay, graphic);
+    return new GraphicTracker<>(mGraphicOverlay, graphic, media);
   }
 }
 

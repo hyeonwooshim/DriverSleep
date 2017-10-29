@@ -9,6 +9,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
@@ -26,16 +27,20 @@ import com.google.android.gms.vision.MultiProcessor;
 import com.google.android.gms.vision.face.FaceDetector;
 import java.io.IOException;
 
+
+import static com.google.android.gms.vision.face.FaceDetector.ALL_CLASSIFICATIONS;
+import static com.google.android.gms.vision.face.FaceDetector.ALL_LANDMARKS;
+
 public class MainActivity extends AppCompatActivity {
   private static final String TAG = MainActivity.class.getSimpleName();
 
   private static final int RC_HANDLE_GMS = 9001;
   // permission request codes need to be < 256
   private static final int RC_HANDLE_CAMERA_PERM = 2;
-
   private CameraSource mCameraSource = null;
   private CameraSourcePreview mPreview;
   private GraphicOverlay mGraphicOverlay;
+  private MediaPlayer mp;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +49,6 @@ public class MainActivity extends AppCompatActivity {
 
     mPreview = findViewById(R.id.preview);
     mGraphicOverlay = findViewById(R.id.faceOverlay);
-
     // Check for the camera permission before accessing the camera.  If the
     // permission is not granted yet, request permission.
     int rc = ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA);
@@ -101,8 +105,13 @@ public class MainActivity extends AppCompatActivity {
     // is set to receive the face detection results, track the faces, and maintain graphics for
     // each face on screen.  The factory is used by the multi-processor to create a separate
     // tracker instance for each face.
-    FaceDetector faceDetector = new FaceDetector.Builder(context).build();
-    FaceTrackerFactory faceFactory = new FaceTrackerFactory(mGraphicOverlay);
+    FaceDetector faceDetector = new FaceDetector.Builder(context)
+            .setProminentFaceOnly(true)
+            .setLandmarkType(ALL_LANDMARKS) // Get all landmarks (track eyes)
+            .setClassificationType(ALL_CLASSIFICATIONS) // Allow probabilities to be computed
+            .build();
+    mp = MediaPlayer.create(context, R.raw.buzzer);
+    FaceTrackerFactory faceFactory = new FaceTrackerFactory(mGraphicOverlay, mp);
     faceDetector.setProcessor(
         new MultiProcessor.Builder<>(faceFactory).build());
 
@@ -142,7 +151,7 @@ public class MainActivity extends AppCompatActivity {
     // to other detection examples to enable the barcode detector to detect small barcodes
     // at long distances.
     mCameraSource = new CameraSource.Builder(getApplicationContext(), multiDetector)
-        .setFacing(CameraSource.CAMERA_FACING_BACK)
+        .setFacing(CameraSource.CAMERA_FACING_FRONT)
         .setRequestedPreviewSize(1600, 1024)
         .setRequestedFps(15.0f)
         .build();
