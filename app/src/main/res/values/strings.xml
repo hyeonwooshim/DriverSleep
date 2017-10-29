@@ -5,4 +5,8 @@
   <string name="permission_camera_rationale">Need camera permission bro</string>
   <string name="no_camera_permission">No camera permission bro</string>
   <string name="ok">OK</string>
+
+  <string name="permission_rationale">We need specific permissions for critical functions.</string>
+  <string name="permissions_required">Permissions Required</string>
+  <string name="enable_gps">Please enable GPS</string>
 </resources>
